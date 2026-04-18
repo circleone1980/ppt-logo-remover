@@ -30,8 +30,20 @@ echo 正在安装基础依赖 (Pillow, numpy, opencv-python)...
 "%VENV_DIR%\Scripts\pip.exe" install Pillow numpy opencv-python -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 echo.
-echo 正在安装 LaMa AI 依赖 (simple-lama-inpainting, torch)...
-echo （首次安装可能需要几分钟，约2GB）
+echo 正在检测 GPU...
+
+:: 检测 NVIDIA GPU
+where nvidia-smi >nul 2>&1
+if %errorlevel%==0 (
+    echo [OK] 检测到 NVIDIA GPU，安装 CUDA 版 PyTorch...
+    "%VENV_DIR%\Scripts\pip.exe" install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+) else (
+    echo [--] 未检测到 NVIDIA GPU，安装 CPU 版 PyTorch...
+    "%VENV_DIR%\Scripts\pip.exe" install torch torchvision -i https://pypi.tuna.tsinghua.edu.cn/simple
+)
+
+echo.
+echo 正在安装 simple-lama-inpainting...
 "%VENV_DIR%\Scripts\pip.exe" install simple-lama-inpainting -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 echo.

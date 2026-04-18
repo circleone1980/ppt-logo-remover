@@ -38,8 +38,19 @@ echo "Installing dependencies (Pillow, numpy, opencv-python)..."
 "$PIP" install -r "$SCRIPT_DIR/requirements.txt" $MIRROR
 
 echo ""
-echo "LaMa AI model will be downloaded automatically on first use with --ai flag."
-echo "(~200MB, from GitHub releases)"
+echo "Detecting GPU..."
+if command -v nvidia-smi &>/dev/null; then
+    echo "[OK] NVIDIA GPU detected, installing CUDA PyTorch..."
+    "$PIP" install torch torchvision --index-url https://download.pytorch.org/whl/cu126
+else
+    echo "[--] No NVIDIA GPU detected, installing CPU PyTorch..."
+    "$PIP" install torch torchvision $MIRROR
+fi
+
+echo ""
+echo "Installing simple-lama-inpainting..."
+"$PIP" install simple-lama-inpainting $MIRROR
+
 echo ""
 echo "========================================"
 echo "Setup complete!"
@@ -48,5 +59,4 @@ echo "  venv: $VENV_DIR"
 echo ""
 echo "  Quick start:"
 echo "    $PYTHON scripts/ppt-logo-remover.py demo.pptx -v"
-echo "    $PYTHON scripts/ppt-logo-remover.py demo.pptx --ai -v"
 echo "========================================"

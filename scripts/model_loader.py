@@ -9,12 +9,22 @@ PPT Logo Remover - Model Loader Module
 
 import os
 import sys
+import subprocess
 from pathlib import Path
 
 # 模型配置
 LAMA_MODEL_ID = "esenmgz/simple-lama"
 
 HF_MIRROR = "https://mirrors.tuna.tsinghua.edu.cn/huggingface"
+
+
+def _has_nvidia_gpu():
+    """检测系统是否有 NVIDIA GPU（不依赖 torch）"""
+    try:
+        result = subprocess.run(['nvidia-smi'], capture_output=True, timeout=5)
+        return result.returncode == 0
+    except Exception:
+        return False
 
 
 def setup_hf_mirror():
@@ -89,7 +99,15 @@ def get_lama_with_fallback(model_dir=None, device=None, verbose=True):
         import torch
         device = 'cuda' if torch.cuda.is_available() else 'cpu'
         if verbose:
-            print(f"  [OK] 使用设备: {device}" + (" (GPU)" if device == 'cuda' else " (CPU)"))
+            if device == 'cuda':
+                gpu_name = torch.cuda.get_device_name(0)
+                print(f"  [OK] 使用设备: {device} ({gpu_name})")
+            else:
+                print(f"  [OK] 使用设备: {device} (CPU)")
+                # 检查是否安装了 CPU 版 torch 但系统有 GPU
+                if _has_nvidia_gpu():
+                    print(f"  [警告] 检测到 NVIDIA GPU 但 torch 无 CUDA 支持")
+                    print(f"  [提示] 请运行 setup.bat 重装 CUDA 版 PyTorch:")
 
     # 首先检查本地模型，通过 LAMA_MODEL 环境变量传递给 SimpleLama
     local_model = get_local_model_path()
