@@ -1,0 +1,10 @@
+# LaMa AI 模型文件（体积大，不推送）
+*.pt
+*.ckpt
+*.pth
+*.safetensors
+*.bin
+config.json
+
+# 保留此 .gitignore 文件
+!.gitignore
