@@ -13,9 +13,7 @@ from pathlib import Path
 
 # 模型配置
 LAMA_MODEL_ID = "esenmgz/simple-lama"
-LAMA_MODEL_FILES = ["big-lama.pt", "best.ckpt"]  # 主要模型文件（.pt 是 PyTorch 格式）
 
-# 清华 TUNA HuggingFace 镜像
 HF_MIRROR = "https://mirrors.tuna.tsinghua.edu.cn/huggingface"
 
 
@@ -36,8 +34,8 @@ def setup_hf_mirror():
             capture_output=True,
             timeout=5
         )
-    except:
-        pass  # 忽略 huggingface-cli 未安装的情况
+    except Exception:
+        pass
 
 
 def get_skill_model_dir():
@@ -47,10 +45,8 @@ def get_skill_model_dir():
     Returns:
         Path: skill 的 models 目录路径
     """
-    # 获取本文件的目录（lib/）
-    lib_dir = Path(__file__).parent
-    # skill 根目录
-    skill_dir = lib_dir.parent
+    scripts_dir = Path(__file__).parent
+    skill_dir = scripts_dir.parent
     # models 目录
     model_dir = skill_dir / 'models'
     return model_dir
@@ -76,73 +72,25 @@ def get_local_model_path():
     return None
 
 
-def download_model_to_skill(verbose=True):
-    """
-    下载 LaMa 模型到 skill 内部（使用清华镜像）
-
-    Args:
-        verbose: 是否显示下载进度
-
-    Returns:
-        Path: 下载后的模型文件路径
-    """
-    setup_hf_mirror()
-
-    # 创建模型目录
-    model_dir = get_skill_model_dir()
-    model_dir.mkdir(parents=True, exist_ok=True)
-
-    if verbose:
-        print(f"  [使用清华镜像] 正在下载 LaMa AI 模型...")
-        print(f"  镜像源: {HF_MIRROR}")
-
-    # 使用 huggingface_hub 下载
-    try:
-        from huggingface_hub import snapshot_download
-
-        # 下载模型到 skill 的 models 目录
-        model_path = snapshot_download(
-            repo_id=LAMA_MODEL_ID,
-            local_dir=str(model_dir),
-            local_dir_use_symlinks=False,
-            resume_download=True,
-        )
-
-        if verbose:
-            print(f"  [OK] 模型下载完成: {model_path}")
-
-        return Path(model_path)
-
-    except ImportError:
-        # 首次使用 AI 模式，安装依赖
-        import subprocess
-        if verbose:
-            print("  [首次使用 AI 模式] 正在安装 simple-lama-inpainting...")
-
-        # 使用清华 PyPI 镜像 + --no-deps（Pillow 已通过 conda 安装）
-        subprocess.check_call([
-            sys.executable, '-m', 'pip', 'install', 'simple-lama-inpainting',
-            '-i', 'https://pypi.tuna.tsinghua.edu.cn/simple',
-            '--no-deps', '-q'
-        ])
-    except Exception as e:
-        if verbose:
-            print(f"  警告: 模型下载失败 - {e}")
-        return None
-
-
-def get_lama_with_fallback(model_dir=None, device='cpu', verbose=True):
+def get_lama_with_fallback(model_dir=None, device=None, verbose=True):
     """
     获取 LaMa 模型实例（支持 skill 本地模型优先）
 
     Args:
         model_dir: 自定义模型目录（可选）
-        device: 运行设备 ('cpu' 或 'cuda')
+        device: 运行设备（None=自动检测GPU, 'cpu', 'cuda'）
         verbose: 是否显示详细信息
 
     Returns:
         SimpleLama: LaMa 模型实例
     """
+    # 自动检测 GPU
+    if device is None:
+        import torch
+        device = 'cuda' if torch.cuda.is_available() else 'cpu'
+        if verbose:
+            print(f"  [OK] 使用设备: {device}" + (" (GPU)" if device == 'cuda' else " (CPU)"))
+
     # 首先检查本地模型，通过 LAMA_MODEL 环境变量传递给 SimpleLama
     local_model = get_local_model_path()
     if local_model:

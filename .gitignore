@@ -1,5 +1,3 @@
 .venv/
 __pycache__/
 *.pyc
-SKILL.md
-evals/

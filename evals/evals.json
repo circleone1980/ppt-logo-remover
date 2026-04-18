@@ -1,0 +1,286 @@
+{
+  "skill_name": "ppt-logo-remover",
+  "description": "测试 PPT Logo 移除技能的触发条件覆盖度",
+  "test_cases": [
+    {
+      "id": 1,
+      "category": "should_trigger",
+      "query": "把这个 PPT 右下角的 NotebookLM logo 去掉",
+      "expected": true,
+      "reason": "明确提到 PPT 和 logo 需要移除"
+    },
+    {
+      "id": 2,
+      "category": "should_trigger",
+      "query": "清理掉这个演示文稿中的水印",
+      "expected": true,
+      "reason": "提到清理演示文稿（PPT）的水印"
+    },
+    {
+      "id": 3,
+      "category": "should_trigger",
+      "query": "如何批量移除多个 PPT 文件中的 logo？",
+      "expected": true,
+      "reason": "提到 PPT 文件和 logo 移除"
+    },
+    {
+      "id": 4,
+      "category": "should_trigger",
+      "query": "这个 PPT 每页都有品牌标识，能去掉吗",
+      "expected": true,
+      "reason": "提到 PPT 和品牌标识移除"
+    },
+    {
+      "id": 5,
+      "category": "should_trigger",
+      "query": "帮我处理一下这个 PPT，让它看起来更专业",
+      "expected": true,
+      "reason": "隐含移除模板 logo 使 PPT 更专业"
+    },
+    {
+      "id": 6,
+      "category": "should_trigger",
+      "query": "Canva 导出的 PPT 有水印，怎么去掉？",
+      "expected": true,
+      "reason": "提到 PPT 水印移除"
+    },
+    {
+      "id": 7,
+      "category": "should_trigger",
+      "query": "我有一个 logo.png 和 演示.pptx，想移除 logo",
+      "expected": true,
+      "reason": "提供了 logo 截图和 PPT 文件"
+    },
+    {
+      "id": 8,
+      "category": "should_trigger",
+      "query": "Gamma 生成的 PPT 右下角有品牌标识",
+      "expected": true,
+      "reason": "提到 AI 工具生成的 PPT 需要清理品牌标识"
+    },
+    {
+      "id": 9,
+      "category": "should_trigger",
+      "query": "怎么去掉 PPT 里的 logo？",
+      "expected": true,
+      "reason": "直接询问移除 PPT logo 的方法"
+    },
+    {
+      "id": 10,
+      "category": "should_trigger",
+      "query": "这个模板 PPT 需要去掉作者水印",
+      "expected": true,
+      "reason": "提到模板 PPT 需要去水印"
+    },
+    {
+      "id": 11,
+      "category": "should_trigger",
+      "query": "批量处理这些 PPT，移除所有 logo",
+      "expected": true,
+      "reason": "提到批量处理 PPT 和移除 logo"
+    },
+    {
+      "id": 12,
+      "category": "should_trigger",
+      "query": "清理 PPT 中的 NotebookLM 标识",
+      "expected": true,
+      "reason": "提到清理 PPT 和品牌标识"
+    },
+    {
+      "id": 13,
+      "category": "should_trigger",
+      "query": "这个演示文稿每页底部都有公司 logo",
+      "expected": true,
+      "reason": "提到演示文稿（PPT）有公司 logo"
+    },
+    {
+      "id": 14,
+      "category": "should_trigger",
+      "query": "去掉 .pptx 文件右下角的水印",
+      "expected": true,
+      "reason": "明确提到 PPTX 文件和水印移除"
+    },
+    {
+      "id": 15,
+      "category": "should_trigger",
+      "query": "模板网站的 PPT 有水印，能清理吗？",
+      "expected": true,
+      "reason": "提到模板 PPT 和水印清理"
+    },
+    {
+      "id": 16,
+      "category": "should_trigger",
+      "query": "把 PPT 里的品牌标识清理掉",
+      "expected": true,
+      "reason": "提到 PPT 和清理品牌标识"
+    },
+    {
+      "id": 17,
+      "category": "should_trigger",
+      "query": "这个 slide deck 有 logo，能去掉吗",
+      "expected": true,
+      "reason": "slide deck = 演示文稿，提到 logo 移除"
+    },
+    {
+      "id": 18,
+      "category": "should_trigger",
+      "query": "去掉这个演示文稿右下角的小图标",
+      "expected": true,
+      "reason": "提到演示文稿和去掉图标（logo）"
+    },
+    {
+      "id": 19,
+      "category": "should_trigger",
+      "query": "我用 AI 生成了 PPT，但上面有平台 logo",
+      "expected": true,
+      "reason": "提到 AI 生成的 PPT 有平台 logo 需要清理"
+    },
+    {
+      "id": 20,
+      "category": "should_trigger",
+      "query": "药监系统AI建设.pptx 这个文件需要去掉 logo",
+      "expected": true,
+      "reason": "提到具体 PPT 文件名和 logo 移除"
+    },
+    {
+      "id": 21,
+      "category": "should_not_trigger",
+      "query": "如何创建一个 PPT？",
+      "expected": false,
+      "reason": "询问创建 PPT，不是移除 logo"
+    },
+    {
+      "id": 22,
+      "category": "should_not_trigger",
+      "query": "帮我设计一个 PPT 模板",
+      "expected": false,
+      "reason": "请求设计 PPT，不是移除 logo"
+    },
+    {
+      "id": 23,
+      "category": "should_not_trigger",
+      "query": "这个 PPT 的内容是什么？",
+      "expected": false,
+      "reason": "询问 PPT 内容，不是移除 logo"
+    },
+    {
+      "id": 24,
+      "category": "should_not_trigger",
+      "query": "怎么把 Word 转成 PPT？",
+      "expected": false,
+      "reason": "文件格式转换，不是移除 logo"
+    },
+    {
+      "id": 25,
+      "category": "should_not_trigger",
+      "query": "我的 PPT 打不开了，怎么办？",
+      "expected": false,
+      "reason": "文件损坏问题，不是移除 logo"
+    },
+    {
+      "id": 26,
+      "category": "should_not_trigger",
+      "query": "怎么给 PPT 添加 logo？",
+      "expected": false,
+      "reason": "添加 logo，不是移除 logo"
+    },
+    {
+      "id": 27,
+      "category": "should_not_trigger",
+      "query": "PPT 怎么加密？",
+      "expected": false,
+      "reason": "PPT 加密，不是移除 logo"
+    },
+    {
+      "id": 28,
+      "category": "should_not_trigger",
+      "query": "这个 logo 看起来不错",
+      "expected": false,
+      "reason": "仅提到 logo，没有 PPT 文件或移除需求"
+    },
+    {
+      "id": 29,
+      "category": "should_not_trigger",
+      "query": "我需要一个水印放在 PPT 上",
+      "expected": false,
+      "reason": "添加水印，不是移除"
+    },
+    {
+      "id": 30,
+      "category": "should_not_trigger",
+      "query": "怎么压缩 PPT 文件大小？",
+      "expected": false,
+      "reason": "压缩 PPT，不是移除 logo"
+    },
+    {
+      "id": 31,
+      "category": "should_not_trigger",
+      "query": "帮我分析这个 logo 的设计",
+      "expected": false,
+      "reason": "分析 logo 设计，不是移除 PPT logo"
+    },
+    {
+      "id": 32,
+      "category": "should_not_trigger",
+      "query": "这个 PPT 有多少页？",
+      "expected": false,
+      "reason": "询问 PPT 页数，不是移除 logo"
+    },
+    {
+      "id": 33,
+      "category": "should_not_trigger",
+      "query": "如何编辑 PPT 的内容？",
+      "expected": false,
+      "reason": "编辑 PPT 内容，不是移除 logo"
+    },
+    {
+      "id": 34,
+      "category": "should_not_trigger",
+      "query": "把这个图片转成 PPT",
+      "expected": false,
+      "reason": "图片转 PPT，不是移除 logo"
+    },
+    {
+      "id": 35,
+      "category": "should_not_trigger",
+      "query": "logo.png 这个图片是什么格式？",
+      "expected": false,
+      "reason": "询问图片格式，没有 PPT 文件或移除需求"
+    },
+    {
+      "id": 36,
+      "category": "should_not_trigger",
+      "query": "怎么美化这个 PPT？",
+      "expected": false,
+      "reason": "美化 PPT 不等于移除 logo"
+    },
+    {
+      "id": 37,
+      "category": "should_not_trigger",
+      "query": "PPT 的配色方案怎么调整？",
+      "expected": false,
+      "reason": "调整配色，不是移除 logo"
+    },
+    {
+      "id": 38,
+      "category": "should_not_trigger",
+      "query": "这个演示文稿的字体太小了",
+      "expected": false,
+      "reason": "字体问题，不是移除 logo"
+    },
+    {
+      "id": 39,
+      "category": "should_not_trigger",
+      "query": "怎么导出 PPT 为 PDF？",
+      "expected": false,
+      "reason": "导出格式，不是移除 logo"
+    },
+    {
+      "id": 40,
+      "category": "should_not_trigger",
+      "query": "我的公司 logo 想放在 PPT 里",
+      "expected": false,
+      "reason": "添加 logo 到 PPT，不是移除"
+    }
+  ]
+}

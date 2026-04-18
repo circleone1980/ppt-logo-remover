@@ -11,7 +11,7 @@ import numpy as np
 from PIL import Image
 import cv2
 
-from .utils import SIFT_MIN_MATCHES, SIFT_RATIO_THRESHOLD
+from utils import SIFT_MIN_MATCHES, SIFT_RATIO_THRESHOLD
 
 
 def detect_logo_sift(img, logo_template):
@@ -90,23 +90,21 @@ def detect_logo_sift(img, logo_template):
     return (x1, y1, x2, y2), confidence
 
 
-def find_logo_in_image(img, logo_template, use_sift=True):
+def find_logo_in_image(img, logo_template):
     """
     在图像中查找 logo 位置
 
     Args:
         img: PIL.Image - 待搜索的图像
         logo_template: PIL.Image - logo 模板
-        use_sift: bool - 是否使用 SIFT（默认 True）
 
     Returns:
         tuple: (x1, y1, x2, y2) 或 None（未找到）
     """
-    if use_sift and logo_template is not None:
+    if logo_template is not None:
         result = detect_logo_sift(img, logo_template)
         if result:
             (x1, y1, x2, y2), confidence = result
-            # 稍微扩大边界框以确保完全覆盖
             margin = 5
             x1 = max(0, x1 - margin)
             y1 = max(0, y1 - margin)

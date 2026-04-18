@@ -6,20 +6,24 @@ PPT Logo Remover - Utils Module
 """
 
 import os
-import re
 from pathlib import Path
 
-# 默认 logo 位置（基于 1376x768 标准图片尺寸）
+# 参考尺寸（NotebookLM 等工具的标准输出）
+REFERENCE_WIDTH = 1376
+REFERENCE_HEIGHT = 768
+
+# 默认 logo 位置（基于参考尺寸）
 DEFAULT_LOGO_X1 = 1255
 DEFAULT_LOGO_Y1 = 725
-DEFAULT_LOGO_X2 = 1376
-DEFAULT_LOGO_Y2 = 768
-SAMPLE_MARGIN = 20
+DEFAULT_LOGO_X2 = REFERENCE_WIDTH
+DEFAULT_LOGO_Y2 = REFERENCE_HEIGHT
+
+# 可处理的图片扩展名
+IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.bmp'}
 
 # SIFT 匹配参数
-SIFT_MIN_MATCHES = 4  # 最少匹配点数
-SIFT_RATIO_THRESHOLD = 0.7  # Lowe's ratio test
-SIFT_MIN_CONFIDENCE = 0.3  # 最小置信度（内点比例）
+SIFT_MIN_MATCHES = 4
+SIFT_RATIO_THRESHOLD = 0.7
 
 
 def generate_output_path(input_path):
@@ -68,28 +72,6 @@ def parse_logo_pos(pos_str):
         pass
 
     return None
-
-
-def get_image_files(media_dir):
-    """
-    获取目录中的所有图片文件
-
-    Args:
-        media_dir: PPTX 媒体目录路径
-
-    Returns:
-        list: 图片文件名列表（按文件名排序）
-    """
-    image_extensions = {'.png', '.jpg', '.jpeg', '.gif', '.bmp'}
-    try:
-        all_files = os.listdir(media_dir)
-        image_files = [
-            f for f in all_files
-            if Path(f).suffix.lower() in image_extensions
-        ]
-        return sorted(image_files)
-    except FileNotFoundError:
-        return []
 
 
 def parse_pages_spec(spec, total_pages):

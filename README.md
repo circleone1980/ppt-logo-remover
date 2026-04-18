@@ -1,6 +1,8 @@
 # PPT Logo Remover
 
-自动移除 PPTX 演示文稿中的 logo、水印或品牌标识（如 NotebookLM、Canva 等平台 logo）。
+自动移除 PPTX 演示文稿中的 logo、水印或品牌标识。
+
+> 这是一个 [Claude Code Skill](https://docs.anthropic.com/en/docs/claude-code/skills)，包含可执行脚本，可直接在 Claude Code 中使用。
 
 ## 功能
 

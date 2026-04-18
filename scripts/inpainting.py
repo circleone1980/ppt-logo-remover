@@ -8,15 +8,11 @@ PPT Logo Remover - Inpainting Module
 支持清华 TUNA 镜像加速下载和本地模型缓存。
 """
 
-import sys
-import subprocess
 import numpy as np
 import cv2
 from PIL import Image
 
-# LaMa AI 模型（延迟初始化）
 _simple_lama_instance = None
-_simple_lama_available = False
 
 
 def get_lama_model():
@@ -29,31 +25,26 @@ def get_lama_model():
     Returns:
         SimpleLama: LaMa AI 模型实例
     """
-    global _simple_lama_instance, _simple_lama_available
+    global _simple_lama_instance
 
     if _simple_lama_instance is None:
-        # 导入模型加载器（包含镜像配置）
-        from .model_loader import get_lama_with_fallback, ensure_model_downloaded
+        from model_loader import get_lama_with_fallback, ensure_model_downloaded
 
-        # 确保模型已下载（使用清华镜像）
         ensure_model_downloaded(verbose=True)
-
-        # 获取模型实例
         _simple_lama_instance = get_lama_with_fallback()
-        _simple_lama_available = True
         print("  [OK] LaMa 模型初始化完成")
 
     return _simple_lama_instance
 
 
-def remove_logo_inpaint(img, x1, y1, x2, y2, use_ai=False):
+def remove_logo_inpaint(img, x1, y1, x2, y2, use_ai=True):
     """
     移除 logo，支持两种修复模式
 
     Args:
         img: PIL.Image - 输入图像
         x1, y1, x2, y2: int - logo 边界框坐标
-        use_ai: bool - 是否使用 LaMa AI（默认 False 使用 OpenCV）
+        use_ai: bool - 是否使用 LaMa AI（默认 True）
 
     Returns:
         PIL.Image: 修复后的图像

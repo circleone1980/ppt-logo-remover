@@ -11,13 +11,10 @@ import os
 import re
 import zipfile
 
+from utils import IMAGE_EXTENSIONS
+
 NS_REL = 'http://schemas.openxmlformats.org/package/2006/relationships'
 NS_PRES = 'http://schemas.openxmlformats.org/presentationml/2006/main'
-
-IMAGE_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image'
-SLIDE_REL_TYPE = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide'
-
-PROCESSABLE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.bmp'}
 
 
 def get_slide_image_map(zip_path):
@@ -51,7 +48,7 @@ def get_slide_image_map(zip_path):
             for target in slide_rels.values():
                 fname = os.path.basename(target).lower()
                 ext = os.path.splitext(fname)[1]
-                if ext in PROCESSABLE_EXTENSIONS:
+                if ext in IMAGE_EXTENSIONS:
                     images.append(os.path.basename(target))
 
             slide_image_map[page_num] = images
@@ -80,7 +77,7 @@ def get_images_for_pages(slide_image_map, page_numbers, media_dir):
     existing = set(os.listdir(media_dir)) if os.path.exists(media_dir) else set()
     result = sorted(img for img in all_images
                     if img in existing
-                    and os.path.splitext(img.lower())[1] in PROCESSABLE_EXTENSIONS)
+                    and os.path.splitext(img.lower())[1] in IMAGE_EXTENSIONS)
     return result
 
 

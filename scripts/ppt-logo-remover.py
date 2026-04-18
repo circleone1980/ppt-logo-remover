@@ -9,8 +9,8 @@ PPT Logo Remover - CLI 入口点
 2. 固定位置模式：移除右下角固定位置的 logo
 
 支持两种修复方法:
-1. 默认模式：OpenCV Inpainting（快速、轻量）
-2. AI 模式：LaMa AI（高质量，需 --ai 参数）
+1. AI 模式（默认）：LaMa AI（高质量无痕修复）
+2. 快速模式：OpenCV Inpainting（需 --opencv 参数）
 
 支持指定页码 (--pages):
   --pages 2-4        只处理第2到4页
@@ -20,11 +20,11 @@ PPT Logo Remover - CLI 入口点
   不传则处理全部页面
 
 Usage:
-    # 模板匹配 + 默认修复
+    # 模板匹配 + AI 修复（默认）
     python3 ppt-logo-remover.py "演示.pptx" "logo.png" -v
 
-    # 模板匹配 + AI 高质量修复
-    python3 ppt-logo-remover.py "演示.pptx" "logo.png" --ai -v
+    # 快速模式（OpenCV Inpainting）
+    python3 ppt-logo-remover.py "演示.pptx" "logo.png" --opencv -v
 
     # 固定位置模式
     python3 ppt-logo-remover.py "演示.pptx" -v
@@ -39,20 +39,16 @@ import os
 import argparse
 from pathlib import Path
 
-# 添加 lib 目录到 Python 路径
+# 添加 scripts 目录到 Python 路径（同级 import）
 script_path = Path(__file__).resolve()
-script_root = script_path.parent.parent  # 技能根目录
-sys.path.insert(0, str(script_root))
-
-# 从当前工作目录解析（备用）
-cwd = Path.cwd()
-if (cwd / 'lib').exists():
-    sys.path.insert(0, str(cwd))
+script_dir = script_path.parent  # scripts/ 目录
+skill_root = script_dir.parent   # skill 根目录
+sys.path.insert(0, str(script_dir))
 
 
 def setup_python_path():
     """设置 Python 路径，优先使用 venv 中的包"""
-    venv_dir = script_root / '.venv'
+    venv_dir = skill_root / '.venv'
 
     if sys.platform == 'win32':
         site_packages = venv_dir / 'Lib' / 'site-packages'
@@ -89,11 +85,11 @@ venv_ok = setup_python_path()
 if not venv_ok:
     ensure_dependencies()
 
-from lib.utils import (
+from utils import (
     DEFAULT_LOGO_X1, DEFAULT_LOGO_Y1, DEFAULT_LOGO_X2, DEFAULT_LOGO_Y2,
     generate_output_path, parse_logo_pos
 )
-from lib.pptx_processor import process_pptx
+from pptx_processor import process_pptx
 
 
 def main():
@@ -105,8 +101,8 @@ def main():
   # 模板匹配模式（推荐）：提供 logo 截图，自动定位并移除
   %(prog)s 演示.pptx logo.png -v
 
-  # 模板匹配 + AI 高质量修复（LaMa）
-  %(prog)s 演示.pptx logo.png --ai -v
+  # 快速模式（OpenCV Inpainting）
+  %(prog)s 演示.pptx logo.png --opencv -v
 
   # 固定位置模式：使用默认位置（右下角）
   %(prog)s 演示.pptx -v
@@ -135,8 +131,8 @@ def main():
     parser.add_argument('--pages', dest='pages', default=None,
                         help='指定处理的页码，支持格式: 2-4, 1,3,5, last, 2-4,7,last')
     parser.add_argument('-v', '--verbose', action='store_true', help='显示详细处理进度')
-    parser.add_argument('--ai', '--use-lama', dest='use_ai', action='store_true',
-                        help='使用 LaMa AI 高质量修复（需下载模型，效果更好但速度较慢）')
+    parser.add_argument('--opencv', dest='use_opencv', action='store_true',
+                        help='使用 OpenCV Inpainting 快速修复（默认使用 LaMa AI）')
 
     args = parser.parse_args()
 
@@ -196,10 +192,10 @@ def main():
         else:
             print(f"页码：  全部页面")
 
-        if args.use_ai:
-            print(f"修复：  LaMa AI 高质量模式")
+        if args.use_opencv:
+            print(f"修复：  OpenCV Inpainting（快速模式）")
         else:
-            print(f"修复：  OpenCV Inpainting（默认）")
+            print(f"修复：  LaMa AI（默认）")
 
         print("=" * 50)
         print()
@@ -211,7 +207,7 @@ def main():
             str(output_path),
             logo_template=str(logo_image) if logo_image else None,
             logo_coords=logo_coords,
-            use_ai=args.use_ai,
+            use_ai=not args.use_opencv,
             verbose=args.verbose,
             pages=args.pages
         )

@@ -15,15 +15,15 @@ from pathlib import Path
 
 from PIL import Image
 
-from .locator import find_logo_in_image
-from .inpainting import remove_logo_inpaint
-from .utils import DEFAULT_LOGO_X1, DEFAULT_LOGO_Y1, DEFAULT_LOGO_X2, DEFAULT_LOGO_Y2
-from .utils import parse_pages_spec
-from .slide_mapper import get_slide_image_map, get_images_for_pages
+from locator import find_logo_in_image
+from inpainting import remove_logo_inpaint
+from utils import REFERENCE_WIDTH, REFERENCE_HEIGHT, IMAGE_EXTENSIONS
+from utils import parse_pages_spec
+from slide_mapper import get_slide_image_map, get_images_for_pages
 
 
 def process_pptx(input_pptx, output_pptx, logo_template=None, logo_coords=None,
-                  use_ai=False, verbose=True, pages=None):
+                  use_ai=True, verbose=True, pages=None):
     """
     处理 PPTX 文件，移除 logo
 
@@ -36,7 +36,7 @@ def process_pptx(input_pptx, output_pptx, logo_template=None, logo_coords=None,
         output_pptx: 输出 PPTX 文件路径
         logo_template: logo 模板图片路径（可选，提供则使用 SIFT 自动定位）
         logo_coords: 固定 logo 位置 (x1, y1, x2, y2)（可选，SIFT 失败时使用）
-        use_ai: 是否使用 LaMa AI 高质量修复（默认 False 使用 OpenCV）
+        use_ai: 是否使用 LaMa AI 修复（默认 True），False 则使用 OpenCV
         verbose: 是否显示详细输出
         pages: 页码规格字符串（可选，如 "2-4,7,last"）
 
@@ -88,7 +88,7 @@ def process_pptx(input_pptx, output_pptx, logo_template=None, logo_coords=None,
             # 未指定页码 -> 处理全部
             target_images = sorted([
                 f for f in os.listdir(media_dir)
-                if os.path.splitext(f.lower())[1] in ('.png', '.jpg', '.jpeg', '.bmp')
+                if os.path.splitext(f.lower())[1] in IMAGE_EXTENSIONS
             ])
 
         total = len(target_images)
@@ -122,13 +122,13 @@ def process_pptx(input_pptx, output_pptx, logo_template=None, logo_coords=None,
 
                 if template_img:
                     # 模板匹配模式：对每张图做 SIFT 检测
-                    current_bounds = find_logo_in_image(img, template_img, use_sift=True)
+                    current_bounds = find_logo_in_image(img, template_img)
 
                 if current_bounds is None and logo_coords:
                     # 固定位置模式：按当前图片实际尺寸等比缩放
                     w, h = img.size
-                    scale_x = w / 1376
-                    scale_y = h / 768
+                    scale_x = w / REFERENCE_WIDTH
+                    scale_y = h / REFERENCE_HEIGHT
                     x1 = int(logo_coords[0] * scale_x)
                     y1 = int(logo_coords[1] * scale_y)
                     x2 = int(logo_coords[2] * scale_x)
@@ -137,7 +137,9 @@ def process_pptx(input_pptx, output_pptx, logo_template=None, logo_coords=None,
 
                 if current_bounds:
                     cleaned = remove_logo_inpaint(img, *current_bounds, use_ai=use_ai)
-                    cleaned.save(output_path, 'PNG')
+                    ext = os.path.splitext(img_name)[1].lower()
+                    fmt = 'JPEG' if ext in ('.jpg', '.jpeg') else 'PNG'
+                    cleaned.save(output_path, fmt)
                     processed += 1
                 else:
                     shutil.copy(img_path, output_path)
@@ -166,7 +168,7 @@ def process_pptx(input_pptx, output_pptx, logo_template=None, logo_coords=None,
 
                     # 使用清理后的 media 文件
                     arc_normalized = arc_name.replace('\\', '/')
-                    if arc_normalized.startswith('ppt/media/') and file.lower().endswith('.png'):
+                    if arc_normalized.startswith('ppt/media/') and os.path.splitext(file.lower())[1] in IMAGE_EXTENSIONS:
                         clean_path = os.path.join(clean_media_dir, file)
                         if os.path.exists(clean_path):
                             zip_out.write(clean_path, arc_name)
